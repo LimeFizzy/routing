@@ -157,7 +157,6 @@ export class CLI {
     
     if (result) {
       console.log(`Message sent successfully!`);
-      console.log(`ID: ${result.id}`);
       console.log(`From: ${result.from}`);
       console.log(`To: ${result.to}`);
       console.log(`Content: "${result.content}"`);

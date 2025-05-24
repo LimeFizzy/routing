@@ -1,4 +1,4 @@
-import { RoutingTable, RoutingTableEntry } from './types';
+import { RoutingTable } from './types';
 
 export class Node {
   public id: string;

@@ -1,3 +1,4 @@
+import { dijkstra } from './dijkstra';
 import { Node } from './Node';
 import { Link, Message, RoutingTable } from './types';
 
@@ -34,7 +35,7 @@ export class Network {
 
     linksToRemove.forEach(link => {
       const [from, to] = link.split('-');
-      this.removeLinkInternal(from, to);
+      this.removeLink(from, to);
     });
 
     this.nodes.delete(nodeId);
@@ -68,10 +69,6 @@ export class Network {
   }
 
   removeLink(from: string, to: string): boolean {
-    return this.removeLinkInternal(from, to);
-  }
-
-  private removeLinkInternal(from: string, to: string): boolean {
     const linkKey = `${from}-${to}`;
     const reverseLinkKey = `${to}-${from}`;
 
@@ -92,62 +89,9 @@ export class Network {
     return true;
   }
 
-  private dijkstra(sourceId: string): Map<string, { distance: number; previous: string | null }> {
-    const distances = new Map<string, number>();
-    const previous = new Map<string, string | null>();
-    const unvisited = new Set<string>();
-
-    for (const nodeId of this.nodes.keys()) {
-      distances.set(nodeId, nodeId === sourceId ? 0 : Infinity);
-      previous.set(nodeId, null);
-      unvisited.add(nodeId);
-    }
-
-    while (unvisited.size > 0) {
-      let currentNode: string | null = null;
-      let minDistance = Infinity;
-      
-      for (const nodeId of unvisited) {
-        const distance = distances.get(nodeId)!;
-        if (distance < minDistance) {
-          minDistance = distance;
-          currentNode = nodeId;
-        }
-      }
-
-      if (currentNode === null || minDistance === Infinity) {
-        break;
-      }
-
-      unvisited.delete(currentNode);
-      const currentDistance = distances.get(currentNode)!;
-      const node = this.nodes.get(currentNode)!;
-
-      for (const [neighborId, weight] of node.neighbors) {
-        if (unvisited.has(neighborId)) {
-          const newDistance = currentDistance + weight;
-          if (newDistance < distances.get(neighborId)!) {
-            distances.set(neighborId, newDistance);
-            previous.set(neighborId, currentNode);
-          }
-        }
-      }
-    }
-
-    const result = new Map<string, { distance: number; previous: string | null }>();
-    for (const nodeId of this.nodes.keys()) {
-      result.set(nodeId, {
-        distance: distances.get(nodeId)!,
-        previous: previous.get(nodeId)!
-      });
-    }
-
-    return result;
-  }
-
   private updateAllRoutingTables(): void {
     for (const sourceId of this.nodes.keys()) {
-      const dijkstraResult = this.dijkstra(sourceId);
+      const dijkstraResult = dijkstra(this.nodes, sourceId);
       const routingTable: RoutingTable = new Map();
 
       for (const [destinationId, { distance, previous }] of dijkstraResult) {
@@ -166,8 +110,8 @@ export class Network {
 
           routingTable.set(destinationId, {
             destination: destinationId,
-            nextHop: nextHop,
-            distance: distance
+            nextHop,
+            distance,
           });
         }
       }
@@ -187,7 +131,6 @@ export class Network {
 
     if (from === to) {
       return {
-        id: this.generateMessageId(),
         content,
         from,
         to,
@@ -201,7 +144,6 @@ export class Network {
     }
 
     return {
-      id: this.generateMessageId(),
       content,
       from,
       to,
@@ -210,7 +152,7 @@ export class Network {
   }
 
   private getPath(from: string, to: string): string[] {
-    const dijkstraResult = this.dijkstra(from);
+    const dijkstraResult = dijkstra(this.nodes, from);
     const result = dijkstraResult.get(to);
     
     if (!result || result.distance === Infinity) {
@@ -226,10 +168,6 @@ export class Network {
     }
 
     return path;
-  }
-
-  private generateMessageId(): string {
-    return Math.random().toString(36).substr(2, 9);
   }
 
   getNodes(): Node[] {
