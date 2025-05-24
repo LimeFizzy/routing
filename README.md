@@ -49,7 +49,7 @@ npm start
 
 #### Utility
 - `help` - Show available commands
-- `exit` or `quit` - Exit the application
+- `exit` - Exit the application
 
 ### Example Session
 
