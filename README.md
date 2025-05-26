@@ -49,8 +49,7 @@ npm start
 
 #### Utility
 - `help` - Show available commands
-- `clear` - Clear the screen
-- `exit` or `quit` - Exit the application
+- `exit` - Exit the application
 
 ### Example Session
 
@@ -105,13 +104,11 @@ ROUTING TABLES:
     A -> B (8)
 
 routing> send-message A C "Hello World!"
-📨 Message sent successfully!
-   ID: abc123def
-   From: A
-   To: C
-   Content: "Hello World!"
-   Path: A → B → C
-   Timestamp: 12/15/2023, 3:45:22 PM
+Message sent successfully!
+From: A
+To: C
+Content: "Hello World!"
+Path: A → B → C
 ```
 
 ## Architecture
