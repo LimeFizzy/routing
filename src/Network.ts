@@ -120,31 +120,31 @@ export class Network {
     
     if (eventType === 'node_failure') {
       for (const nodeId of this.nodes.keys()) {
-        this.scheduleRoutingUpdate(nodeId, this.updatePropagationDelay * Math.random());
+        this.scheduleRoutingUpdate(nodeId, this.updatePropagationDelay * 0.5);
       }
     } else if (eventType === 'link_failure') {
       const { from, to } = eventData;
       if (this.nodes.has(from)) {
-        this.scheduleRoutingUpdate(from, this.updatePropagationDelay * 0.1);
+        this.scheduleRoutingUpdate(from, this.updatePropagationDelay * 0.5);
       }
       if (this.nodes.has(to)) {
-        this.scheduleRoutingUpdate(to, this.updatePropagationDelay * 0.1);
+        this.scheduleRoutingUpdate(to, this.updatePropagationDelay * 0.5);
       }
     } else if (eventType === 'node_addition') {
       const newNodeId = eventData;
-      this.scheduleRoutingUpdate(newNodeId, this.updatePropagationDelay * 0.1);
+      this.scheduleRoutingUpdate(newNodeId, this.updatePropagationDelay * 0.5);
       for (const nodeId of this.nodes.keys()) {
         if (nodeId !== newNodeId) {
-          this.scheduleRoutingUpdate(nodeId, this.updatePropagationDelay * (0.5 + Math.random() * 0.5));
+          this.scheduleRoutingUpdate(nodeId, this.updatePropagationDelay * 0.5);
         }
       }
     } else if (eventType === 'link_addition') {
       const { from, to } = eventData;
       if (this.nodes.has(from)) {
-        this.scheduleRoutingUpdate(from, this.updatePropagationDelay * 0.1);
+        this.scheduleRoutingUpdate(from, this.updatePropagationDelay * 0.5);
       }
       if (this.nodes.has(to)) {
-        this.scheduleRoutingUpdate(to, this.updatePropagationDelay * 0.1);
+        this.scheduleRoutingUpdate(to, this.updatePropagationDelay * 0.5);
       }
     }
 
